@@ -30,6 +30,11 @@
     font-size:13px;
   }
 
+  .sticky-top{
+    position:sticky;
+    top:0;
+    z-index:60;
+  }
   header.appbar{
     display:flex;
     align-items:center;
@@ -37,9 +42,6 @@
     padding:14px 20px;
     background:var(--panel);
     border-bottom:1px solid var(--line);
-    position:sticky;
-    top:0;
-    z-index:60;
   }
   header.appbar .wordmark{
     display:flex;
@@ -72,9 +74,6 @@
     padding:12px 20px;
     background:var(--panel);
     border-bottom:1px solid var(--line);
-    position:sticky;
-    top:53px;
-    z-index:50;
   }
   .toolbar input[type=text]{
     font-family:inherit;
@@ -189,7 +188,22 @@
     background:#10182c;
   }
 
-  td.col-del{ text-align:center; padding:0; }
+  td.col-del{
+    text-align:center;
+    padding:0;
+    position:sticky;
+    right:0;
+    background:var(--panel);
+    z-index:20;
+  }
+  tbody tr:nth-child(even) td.col-del{ background:var(--panel-2); }
+  tbody tr:hover td.col-del{ background:#1f2636; }
+  th.col-del{
+    position:sticky;
+    right:0;
+    z-index:45;
+    background:var(--blue-soft);
+  }
   .del-btn{
     border:none;
     background:transparent;
@@ -226,6 +240,7 @@
 </head>
 <body>
 
+<div class="sticky-top">
 <header class="appbar">
   <div>
     <div class="wordmark"><span class="tokin">TOKINTIENDA</span><span class="tienda">&nbsp;ROADMAP</span></div>
@@ -234,9 +249,10 @@
 </header>
 
 <div class="toolbar">
-  <input type="text" id="searchBox" placeholder="Buscar iniciativa...">
+  <input type="text" id="searchBox" placeholder="Buscar iniciativa..." spellcheck="false" lang="es">
   <button class="btn" id="addRowBtn">+ Fila</button>
   <button class="btn export" id="exportBtn">Exportar a Excel</button>
+</div>
 </div>
 
 <main>
@@ -257,6 +273,7 @@
     <tbody id="tbody"></tbody>
   </table>
 </main>
+
 
 <footer class="foot">roadmap_tokin · edición en vivo · exportá cuando termines</footer>
 
@@ -305,32 +322,32 @@ function render(){
 
     const tdPlat = document.createElement('td');
     tdPlat.className = 'col-plataforma';
-    tdPlat.innerHTML = `<input class="cell" data-field="plataforma" value="${escapeAttr(item.plataforma)}">`;
+    tdPlat.innerHTML = `<input class="cell" data-field="plataforma" value="${escapeAttr(item.plataforma)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdPlat);
 
     const tdTeam = document.createElement('td');
     tdTeam.className = 'col-team';
-    tdTeam.innerHTML = `<input class="cell" data-field="team" value="${escapeAttr(item.team)}">`;
+    tdTeam.innerHTML = `<input class="cell" data-field="team" value="${escapeAttr(item.team)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdTeam);
 
     const tdIniciativa = document.createElement('td');
     tdIniciativa.className = 'col-iniciativa';
-    tdIniciativa.innerHTML = `<input class="cell" data-field="iniciativa" value="${escapeAttr(item.iniciativa)}">`;
+    tdIniciativa.innerHTML = `<input class="cell" data-field="iniciativa" value="${escapeAttr(item.iniciativa)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdIniciativa);
 
     const tdInicio = document.createElement('td');
     tdInicio.className = 'col-fecha';
-    tdInicio.innerHTML = `<input class="cell" data-field="inicio" value="${escapeAttr(item.inicio)}">`;
+    tdInicio.innerHTML = `<input class="cell" data-field="inicio" value="${escapeAttr(item.inicio)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdInicio);
 
     const tdFin = document.createElement('td');
     tdFin.className = 'col-fecha';
-    tdFin.innerHTML = `<input class="cell" data-field="fin" value="${escapeAttr(item.fin)}">`;
+    tdFin.innerHTML = `<input class="cell" data-field="fin" value="${escapeAttr(item.fin)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdFin);
 
     const tdEstado = document.createElement('td');
     tdEstado.className = 'col-estado';
-    tdEstado.innerHTML = `<input class="cell ${estadoClass(item.estado)}" data-field="estado" value="${escapeAttr(item.estado)}">`;
+    tdEstado.innerHTML = `<input class="cell ${estadoClass(item.estado)}" data-field="estado" value="${escapeAttr(item.estado)}" spellcheck="false" lang="es">`;
     tr.appendChild(tdEstado);
 
     const tdComentarios = document.createElement('td');
@@ -339,6 +356,8 @@ function render(){
     taComentarios.className = 'cell';
     taComentarios.dataset.field = 'comentarios';
     taComentarios.rows = 1;
+    taComentarios.spellcheck = false;
+    taComentarios.lang = 'es';
     taComentarios.value = item.comentarios || '';
     tdComentarios.appendChild(taComentarios);
     tr.appendChild(tdComentarios);
