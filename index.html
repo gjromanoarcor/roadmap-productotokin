@@ -135,7 +135,7 @@
   }
   th.col-plataforma{width:120px;}
   th.col-team{width:130px;}
-  th.col-iniciativa{width:320px;}
+  th.col-iniciativa{width:360px;}
   th.col-fecha{width:110px;}
   th.col-estado{width:190px;}
   th.col-comentarios{width:260px; max-width:260px;}
@@ -145,7 +145,8 @@
   tbody tr:nth-child(even){ background:var(--panel-2); }
   tbody tr:hover{ background:#1f2636; }
 
-  td.col-plataforma, td.col-team, td.col-fecha, td.col-estado, td.col-iniciativa, td.col-comentarios{ padding:0; }
+  td.col-plataforma, td.col-team, td.col-fecha, td.col-estado, td.col-comentarios{ padding:0; }
+  td.col-iniciativa{ padding:0; vertical-align:top; }
   input.cell{
     width:100%;
     border:1px solid transparent;
@@ -164,6 +165,8 @@
   }
 
   td.col-comentarios{ vertical-align:top; }
+  textarea.iniciativa-field{ font-weight:600; }
+
   textarea.cell{
     width:100%;
     display:block;
@@ -332,8 +335,16 @@ function render(){
 
     const tdIniciativa = document.createElement('td');
     tdIniciativa.className = 'col-iniciativa';
-    tdIniciativa.innerHTML = `<input class="cell" data-field="iniciativa" value="${escapeAttr(item.iniciativa)}" spellcheck="false" lang="es">`;
+    const taIniciativa = document.createElement('textarea');
+    taIniciativa.className = 'cell iniciativa-field';
+    taIniciativa.dataset.field = 'iniciativa';
+    taIniciativa.rows = 1;
+    taIniciativa.spellcheck = false;
+    taIniciativa.lang = 'es';
+    taIniciativa.value = item.iniciativa;
+    tdIniciativa.appendChild(taIniciativa);
     tr.appendChild(tdIniciativa);
+    autoResize(taIniciativa);
 
     const tdInicio = document.createElement('td');
     tdInicio.className = 'col-fecha';
