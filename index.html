@@ -239,6 +239,17 @@
     font-size:11.5px;
     color:var(--text-dim);
   }
+
+  .sync-status{
+    font-size:12px;
+    color:var(--text-dim);
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .sync-status.ok{ color:var(--green); }
+  .sync-status.saving{ color:var(--amber); }
+  .sync-status.error{ color:var(--red); }
 </style>
 </head>
 <body>
@@ -254,6 +265,7 @@
 <div class="toolbar">
   <input type="text" id="searchBox" placeholder="Buscar iniciativa..." spellcheck="false" lang="es">
   <button class="btn" id="addRowBtn">+ Fila</button>
+  <span id="syncStatus" class="sync-status">●&nbsp;Cargando...</span>
   <button class="btn export" id="exportBtn">Exportar a Excel</button>
 </div>
 </div>
@@ -283,6 +295,76 @@
 <script>
 const ORIGINAL_DATA = [{"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "POP -UPS", "inicio": "Junio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Admin", "team": "Promociones", "iniciativa": "Exclusión de PDVS en promociones", "inicio": "Julio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Carrito", "iniciativa": "Performance en carrito (+50skus)", "inicio": "Junio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Productos", "inicio": "Julio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Personalización de banners (Hero-Search-Cart-Novedades nivel Id_pdv) (A)", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Tienda", "team": "Carrito", "iniciativa": "Actualizacion del minimo de compra 21k + iva", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Mejoras", "team": "Catalogo", "iniciativa": "Aumento de cantidades en selector de productos (999)", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Combo cerrado", "inicio": "Julio", "fin": "Agosto", "estado": "En desarrollo"}, {"plataforma": "Admin", "team": "Audiencias", "iniciativa": "Modulo de audiencias V1", "inicio": "Julio", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Ecosistema", "iniciativa": "Roles y permisos de todos los usuarios", "inicio": "Julio", "fin": "Agosto", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Enriquecimiento de productos con Agente IA (TAGS)", "inicio": "Julio", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Ecosistema", "iniciativa": "Auditoría - Logs", "inicio": "Julio", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Marcas", "inicio": "Agosto", "fin": "Agosto", "estado": "Refinado"}, {"plataforma": "Back", "team": "Analítica", "iniciativa": "Personalización de la tienda - Categorias y marcas", "inicio": "Agosto", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Analitica", "iniciativa": "Personalización de la tienda - banners", "inicio": "Agosto", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Admin", "team": "Audiencias", "iniciativa": "Modulo de Audiencias - integración con Audify", "inicio": "Agosto", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Precio fijo", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Combo abierto", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Promociones", "iniciativa": "Tipos de Presupuestos/bonificaciones en el formulario de promos", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Nueva experiencia de carga grandes pedidos", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Categorias", "inicio": "Septiembre", "fin": "Septiembre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Pre-Venta exclusiva (reserva de producto) + habilitador de visualización de card de productos (A)", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Comunicación", "iniciativa": "Top bar en el Admin", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Nueva sección de promociones (A)", "inicio": "Septiembre", "fin": "Octubre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Cuenta corriente + Pasarela de pagos  + opción pago parcial (A)", "inicio": "Agosto", "fin": "Octubre", "estado": "Stand by - A espera del proveedor"}, {"plataforma": "Motor promo", "team": "Promociones", "iniciativa": "Promo Gift (A)", "inicio": "Septiembre", "fin": "Octubre", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Producto", "iniciativa": "Apertura de la tienda al espacio público (consultivo)", "inicio": "Octubre", "fin": "Octubre", "estado": "Backlog - Belu quiere priorizar"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Nuevos espacios publicitarios (Sticky-Robapáginas-Rascacielos) (A)", "inicio": "Octubre", "fin": "Noviembre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Registro/Login", "iniciativa": "Prehome - Exhibición de marcas/Cobertura/Tiempo de entrega/Fidelización", "inicio": "Noviembre", "fin": "Noviembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Fidelización", "iniciativa": "Plan de Fidelización (A)", "inicio": "Octubre", "fin": "Diciembre", "estado": "Stand by - a la espera del proveedor y presupuesto"}, {"plataforma": "Tienda", "team": "Perfil", "iniciativa": "Autogestión del pdv - Rol dueño y permisos de administración (Formulario de actualización)", "inicio": "Noviembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Tags en cards de productos habilitador de segmentaciones  (ver arcor/partner/Chile)", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Anulación de pedidos (A) - Cancelación con Timer para la bajada del ped (U)", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Agente IA", "iniciativa": "Agente IA - Asistente de ventas en Tokin", "inicio": "Octubre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Admin", "team": "Config", "iniciativa": "Mantenimiento (opción en Admin) + Visual", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Landing - Nuevas Gadgets Ej. Timer ofertas", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Registro/Login", "iniciativa": "Alta en Tokin independiente (onboarding) + Acceso AEC", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Opción combinación medios de pago", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Rediseño de Card de producto - Brief", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Perfil", "iniciativa": "Insights de negocio para el cliente", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Disponibilizar documentos legales en la cuenta corriente (descarga de los usuarios)", "inicio": "2027", "fin": "2027", "estado": "Backlog"}];
 let data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+
+// ---- Persistencia en la nube (JSONBin) ----
+const JSONBIN_ID = '6a579834f5f4af5e2992ddc9';
+const JSONBIN_KEY = '$2a$10$kuPI.5kvyQg3/nxVinsrhe8VRzj3nBJzEn59ROG5DprBoXRwhqphS';
+const JSONBIN_BASE = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
+
+const syncStatusEl = document.getElementById('syncStatus');
+function setSyncStatus(state){
+  if(state === 'ok'){
+    syncStatusEl.textContent = '●\u00a0Guardado';
+    syncStatusEl.className = 'sync-status ok';
+  } else if(state === 'saving'){
+    syncStatusEl.textContent = '●\u00a0Guardando...';
+    syncStatusEl.className = 'sync-status saving';
+  } else if(state === 'loading'){
+    syncStatusEl.textContent = '●\u00a0Cargando...';
+    syncStatusEl.className = 'sync-status';
+  } else {
+    syncStatusEl.textContent = '●\u00a0Sin conexión';
+    syncStatusEl.className = 'sync-status error';
+  }
+}
+
+let saveTimer = null;
+function scheduleSave(){
+  setSyncStatus('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveRemote, 900);
+}
+
+async function saveRemote(){
+  try{
+    const res = await fetch(JSONBIN_BASE, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify({ data })
+    });
+    if(!res.ok) throw new Error('save failed');
+    setSyncStatus('ok');
+  }catch(e){
+    setSyncStatus('error');
+  }
+}
+
+async function loadRemote(){
+  setSyncStatus('loading');
+  try{
+    const res = await fetch(JSONBIN_BASE + '/latest', {
+      headers: { 'X-Master-Key': JSONBIN_KEY }
+    });
+    if(!res.ok) throw new Error('load failed');
+    const json = await res.json();
+    const remoteData = json && json.record && Array.isArray(json.record.data) ? json.record.data : null;
+    if(remoteData && remoteData.length > 0){
+      data = remoteData;
+    } else {
+      // el bin está vacío: lo sembramos con los datos iniciales
+      data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+      await saveRemote();
+    }
+    setSyncStatus('ok');
+  }catch(e){
+    setSyncStatus('error');
+    // seguimos con los datos locales por defecto si falla la carga
+  }
+  render();
+}
 
 const tbody = document.getElementById('tbody');
 const searchBox = document.getElementById('searchBox');
@@ -397,6 +479,7 @@ function attachRowEvents(){
         if(inp.tagName === 'TEXTAREA'){
           autoResize(inp);
         }
+        scheduleSave();
       });
     });
 
@@ -404,6 +487,7 @@ function attachRowEvents(){
       if(confirm('¿Eliminar "' + data[idx].iniciativa + '"?')){
         data.splice(idx, 1);
         render();
+        scheduleSave();
       }
     });
 
@@ -426,6 +510,7 @@ function attachRowEvents(){
       const [moved] = data.splice(fromIdx, 1);
       data.splice(toIdx, 0, moved);
       render();
+      scheduleSave();
     });
   });
 }
@@ -433,6 +518,7 @@ function attachRowEvents(){
 document.getElementById('addRowBtn').addEventListener('click', () => {
   data.push({ plataforma:'', team:'', iniciativa:'Nueva iniciativa', inicio:'', fin:'', estado:'Backlog', comentarios:'' });
   render();
+  scheduleSave();
 });
 
 document.getElementById('exportBtn').addEventListener('click', () => {
@@ -451,7 +537,7 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 
 searchBox.addEventListener('input', render);
 
-render();
+loadRemote();
 </script>
 
 </body>
