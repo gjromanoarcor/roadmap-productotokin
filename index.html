@@ -250,6 +250,36 @@
   .sync-status.ok{ color:var(--green); }
   .sync-status.saving{ color:var(--amber); }
   .sync-status.error{ color:var(--red); }
+
+  .filterbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    padding:10px 20px;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  .filterbar select{
+    font-family:inherit;
+    font-size:12.5px;
+    padding:6px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:var(--panel);
+    color:var(--text);
+    max-width:190px;
+  }
+  .filterbar select:hover{ border-color:#3a4358; }
+  .filterbar select:focus{ outline:none; border-color:var(--blue); }
+  .btn.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    padding:6px 12px;
+    font-weight:500;
+  }
+  .btn.ghost:hover{ color:var(--text); border-color:#3a4358; }
 </style>
 </head>
 <body>
@@ -267,6 +297,15 @@
   <button class="btn" id="addRowBtn">+ Fila</button>
   <span id="syncStatus" class="sync-status">●&nbsp;Cargando...</span>
   <button class="btn export" id="exportBtn">Exportar a Excel</button>
+</div>
+
+<div class="filterbar">
+  <select id="filterPlataforma"><option value="">Plataforma: todas</option></select>
+  <select id="filterTeam"><option value="">Product Team: todos</option></select>
+  <select id="filterInicio"><option value="">Fecha inicio: todas</option></select>
+  <select id="filterFin"><option value="">Fecha entrega: todas</option></select>
+  <select id="filterEstado"><option value="">Estado: todos</option></select>
+  <button class="btn ghost" id="clearFiltersBtn">Limpiar filtros</button>
 </div>
 </div>
 
@@ -382,17 +421,48 @@ function estadoClass(estado){
   return 'estado-' + String(estado || '').replace(/\s+/g,'');
 }
 
+const filterPlataforma = document.getElementById('filterPlataforma');
+const filterTeam = document.getElementById('filterTeam');
+const filterInicio = document.getElementById('filterInicio');
+const filterFin = document.getElementById('filterFin');
+const filterEstado = document.getElementById('filterEstado');
+
+function fillSelect(selectEl, values, placeholder){
+  const current = selectEl.value;
+  selectEl.innerHTML = `<option value="">${placeholder}</option>` +
+    values.map(v => `<option value="${escapeAttr(v)}">${v}</option>`).join('');
+  if(values.includes(current)) selectEl.value = current;
+}
+
+function populateFilterOptions(){
+  const uniq = (field) => Array.from(new Set(data.map(d => (d[field] || '').trim()).filter(Boolean))).sort();
+  fillSelect(filterPlataforma, uniq('plataforma'), 'Plataforma: todas');
+  fillSelect(filterTeam, uniq('team'), 'Product Team: todos');
+  fillSelect(filterInicio, uniq('inicio'), 'Fecha inicio: todas');
+  fillSelect(filterFin, uniq('fin'), 'Fecha entrega: todas');
+  fillSelect(filterEstado, uniq('estado'), 'Estado: todos');
+}
+
 function matchesFilter(item){
   const q = searchBox.value.trim().toLowerCase();
-  if(!q) return true;
-  return item.iniciativa.toLowerCase().includes(q) ||
+  if(q){
+    const matchesText = item.iniciativa.toLowerCase().includes(q) ||
          item.plataforma.toLowerCase().includes(q) ||
          item.team.toLowerCase().includes(q) ||
          item.estado.toLowerCase().includes(q) ||
          (item.comentarios || '').toLowerCase().includes(q);
+    if(!matchesText) return false;
+  }
+  if(filterPlataforma.value && item.plataforma !== filterPlataforma.value) return false;
+  if(filterTeam.value && item.team !== filterTeam.value) return false;
+  if(filterInicio.value && item.inicio !== filterInicio.value) return false;
+  if(filterFin.value && item.fin !== filterFin.value) return false;
+  if(filterEstado.value && item.estado !== filterEstado.value) return false;
+  return true;
 }
 
 function render(){
+  populateFilterOptions();
   tbody.innerHTML = '';
   data.forEach((item, idx) => {
     if(!matchesFilter(item)) return;
@@ -426,7 +496,6 @@ function render(){
     taIniciativa.value = item.iniciativa;
     tdIniciativa.appendChild(taIniciativa);
     tr.appendChild(tdIniciativa);
-    autoResize(taIniciativa);
 
     const tdInicio = document.createElement('td');
     tdInicio.className = 'col-fecha';
@@ -454,7 +523,6 @@ function render(){
     taComentarios.value = item.comentarios || '';
     tdComentarios.appendChild(taComentarios);
     tr.appendChild(tdComentarios);
-    autoResize(taComentarios);
 
     const tdDel = document.createElement('td');
     tdDel.className = 'col-del';
@@ -463,6 +531,7 @@ function render(){
 
     tbody.appendChild(tr);
   });
+  tbody.querySelectorAll('textarea.cell').forEach(autoResize);
   attachRowEvents();
 }
 
@@ -536,6 +605,18 @@ document.getElementById('exportBtn').addEventListener('click', () => {
 });
 
 searchBox.addEventListener('input', render);
+[filterPlataforma, filterTeam, filterInicio, filterFin, filterEstado].forEach(sel => {
+  sel.addEventListener('change', render);
+});
+document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+  searchBox.value = '';
+  filterPlataforma.value = '';
+  filterTeam.value = '';
+  filterInicio.value = '';
+  filterFin.value = '';
+  filterEstado.value = '';
+  render();
+});
 
 loadRemote();
 </script>
