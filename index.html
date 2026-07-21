@@ -280,6 +280,30 @@
     font-weight:500;
   }
   .btn.ghost:hover{ color:var(--text); border-color:#3a4358; }
+
+  .tabs{
+    display:flex;
+    gap:2px;
+    padding:0 20px;
+    background:var(--panel);
+    border-bottom:1px solid var(--line);
+  }
+  .tab-btn{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:600;
+    padding:10px 16px;
+    border:none;
+    background:transparent;
+    color:var(--text-dim);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn:hover{ color:var(--text); }
+  .tab-btn.active{
+    color:var(--blue);
+    border-bottom:2px solid var(--blue);
+  }
 </style>
 </head>
 <body>
@@ -291,6 +315,11 @@
     <div class="sub">Equipo de Producto</div>
   </div>
 </header>
+
+<div class="tabs">
+  <button class="tab-btn active" id="tabRoadmap" data-tab="roadmap">Roadmap</button>
+  <button class="tab-btn" id="tabTareas" data-tab="tareas">Tareas internas</button>
+</div>
 
 <div class="toolbar">
   <input type="text" id="searchBox" placeholder="Buscar iniciativa..." spellcheck="false" lang="es">
@@ -333,7 +362,15 @@
 
 <script>
 const ORIGINAL_DATA = [{"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "POP -UPS", "inicio": "Junio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Admin", "team": "Promociones", "iniciativa": "Exclusión de PDVS en promociones", "inicio": "Julio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Carrito", "iniciativa": "Performance en carrito (+50skus)", "inicio": "Junio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Productos", "inicio": "Julio", "fin": "Julio", "estado": "PROD"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Personalización de banners (Hero-Search-Cart-Novedades nivel Id_pdv) (A)", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Tienda", "team": "Carrito", "iniciativa": "Actualizacion del minimo de compra 21k + iva", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Mejoras", "team": "Catalogo", "iniciativa": "Aumento de cantidades en selector de productos (999)", "inicio": "Julio", "fin": "Julio", "estado": "En desarrollo"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Combo cerrado", "inicio": "Julio", "fin": "Agosto", "estado": "En desarrollo"}, {"plataforma": "Admin", "team": "Audiencias", "iniciativa": "Modulo de audiencias V1", "inicio": "Julio", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Ecosistema", "iniciativa": "Roles y permisos de todos los usuarios", "inicio": "Julio", "fin": "Agosto", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Enriquecimiento de productos con Agente IA (TAGS)", "inicio": "Julio", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Ecosistema", "iniciativa": "Auditoría - Logs", "inicio": "Julio", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Marcas", "inicio": "Agosto", "fin": "Agosto", "estado": "Refinado"}, {"plataforma": "Back", "team": "Analítica", "iniciativa": "Personalización de la tienda - Categorias y marcas", "inicio": "Agosto", "fin": "Agosto", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Analitica", "iniciativa": "Personalización de la tienda - banners", "inicio": "Agosto", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Admin", "team": "Audiencias", "iniciativa": "Modulo de Audiencias - integración con Audify", "inicio": "Agosto", "fin": "Septiembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Precio fijo", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Combo abierto", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Promociones", "iniciativa": "Tipos de Presupuestos/bonificaciones en el formulario de promos", "inicio": "Agosto", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Nueva experiencia de carga grandes pedidos", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Normalización descripción de Categorias", "inicio": "Septiembre", "fin": "Septiembre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Pre-Venta exclusiva (reserva de producto) + habilitador de visualización de card de productos (A)", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Admin", "team": "Comunicación", "iniciativa": "Top bar en el Admin", "inicio": "Septiembre", "fin": "Septiembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Promociones", "iniciativa": "Nueva sección de promociones (A)", "inicio": "Septiembre", "fin": "Octubre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Cuenta corriente + Pasarela de pagos  + opción pago parcial (A)", "inicio": "Agosto", "fin": "Octubre", "estado": "Stand by - A espera del proveedor"}, {"plataforma": "Motor promo", "team": "Promociones", "iniciativa": "Promo Gift (A)", "inicio": "Septiembre", "fin": "Octubre", "estado": "En refinamiento"}, {"plataforma": "Back", "team": "Producto", "iniciativa": "Apertura de la tienda al espacio público (consultivo)", "inicio": "Octubre", "fin": "Octubre", "estado": "Backlog - Belu quiere priorizar"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Nuevos espacios publicitarios (Sticky-Robapáginas-Rascacielos) (A)", "inicio": "Octubre", "fin": "Noviembre", "estado": "Refinado"}, {"plataforma": "Tienda", "team": "Registro/Login", "iniciativa": "Prehome - Exhibición de marcas/Cobertura/Tiempo de entrega/Fidelización", "inicio": "Noviembre", "fin": "Noviembre", "estado": "En refinamiento"}, {"plataforma": "Tienda", "team": "Fidelización", "iniciativa": "Plan de Fidelización (A)", "inicio": "Octubre", "fin": "Diciembre", "estado": "Stand by - a la espera del proveedor y presupuesto"}, {"plataforma": "Tienda", "team": "Perfil", "iniciativa": "Autogestión del pdv - Rol dueño y permisos de administración (Formulario de actualización)", "inicio": "Noviembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Tags en cards de productos habilitador de segmentaciones  (ver arcor/partner/Chile)", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pedidos", "iniciativa": "Anulación de pedidos (A) - Cancelación con Timer para la bajada del ped (U)", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Agente IA", "iniciativa": "Agente IA - Asistente de ventas en Tokin", "inicio": "Octubre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Admin", "team": "Config", "iniciativa": "Mantenimiento (opción en Admin) + Visual", "inicio": "Diciembre", "fin": "Diciembre", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Comunicación", "iniciativa": "Landing - Nuevas Gadgets Ej. Timer ofertas", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Registro/Login", "iniciativa": "Alta en Tokin independiente (onboarding) + Acceso AEC", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Opción combinación medios de pago", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Catálogo", "iniciativa": "Rediseño de Card de producto - Brief", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Perfil", "iniciativa": "Insights de negocio para el cliente", "inicio": "2027", "fin": "2027", "estado": "Backlog"}, {"plataforma": "Tienda", "team": "Pay", "iniciativa": "Disponibilizar documentos legales en la cuenta corriente (descarga de los usuarios)", "inicio": "2027", "fin": "2027", "estado": "Backlog"}];
-let data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+const ORIGINAL_ROADMAP = ORIGINAL_DATA;
+const ORIGINAL_TAREAS = [];
+
+const store = {
+  roadmap: JSON.parse(JSON.stringify(ORIGINAL_ROADMAP)),
+  tareas: JSON.parse(JSON.stringify(ORIGINAL_TAREAS))
+};
+let currentTab = 'roadmap';
+let data = store[currentTab];
 
 // ---- Persistencia en la nube (JSONBin) ----
 const JSONBIN_ID = '6a579834f5f4af5e2992ddc9';
@@ -372,7 +409,7 @@ async function saveRemote(){
         'Content-Type': 'application/json',
         'X-Master-Key': JSONBIN_KEY
       },
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: store })
     });
     if(!res.ok) throw new Error('save failed');
     setSyncStatus('ok');
@@ -389,14 +426,23 @@ async function loadRemote(){
     });
     if(!res.ok) throw new Error('load failed');
     const json = await res.json();
-    const remoteData = json && json.record && Array.isArray(json.record.data) ? json.record.data : null;
-    if(remoteData && remoteData.length > 0){
-      data = remoteData;
+    const remote = json && json.record ? json.record.data : null;
+
+    if(Array.isArray(remote) && remote.length > 0){
+      // formato viejo: un solo array (era todo "roadmap")
+      store.roadmap = remote;
+      store.tareas = [];
+      await saveRemote();
+    } else if(remote && typeof remote === 'object' && (Array.isArray(remote.roadmap) || Array.isArray(remote.tareas))){
+      store.roadmap = Array.isArray(remote.roadmap) ? remote.roadmap : [];
+      store.tareas = Array.isArray(remote.tareas) ? remote.tareas : [];
     } else {
       // el bin está vacío: lo sembramos con los datos iniciales
-      data = JSON.parse(JSON.stringify(ORIGINAL_DATA));
+      store.roadmap = JSON.parse(JSON.stringify(ORIGINAL_ROADMAP));
+      store.tareas = JSON.parse(JSON.stringify(ORIGINAL_TAREAS));
       await saveRemote();
     }
+    data = store[currentTab];
     setSyncStatus('ok');
   }catch(e){
     setSyncStatus('error');
@@ -585,21 +631,50 @@ function attachRowEvents(){
 }
 
 document.getElementById('addRowBtn').addEventListener('click', () => {
-  data.push({ plataforma:'', team:'', iniciativa:'Nueva iniciativa', inicio:'', fin:'', estado:'Backlog', comentarios:'' });
+  const nombre = currentTab === 'tareas' ? 'Nueva tarea' : 'Nueva iniciativa';
+  data.push({ plataforma:'', team:'', iniciativa:nombre, inicio:'', fin:'', estado:'Backlog', comentarios:'' });
   render();
   scheduleSave();
 });
 
+function switchTab(tab){
+  currentTab = tab;
+  data = store[currentTab];
+  document.getElementById('tabRoadmap').classList.toggle('active', tab === 'roadmap');
+  document.getElementById('tabTareas').classList.toggle('active', tab === 'tareas');
+  searchBox.value = '';
+  filterPlataforma.value = '';
+  filterTeam.value = '';
+  filterInicio.value = '';
+  filterFin.value = '';
+  filterEstado.value = '';
+  render();
+}
+document.getElementById('tabRoadmap').addEventListener('click', () => switchTab('roadmap'));
+document.getElementById('tabTareas').addEventListener('click', () => switchTab('tareas'));
+
 document.getElementById('exportBtn').addEventListener('click', () => {
-  const rows = [];
-  rows.push(['Plataforma','Product Team','Iniciativa','Fecha de inicio','Fecha de entrega','Estado','Comentarios']);
-  data.forEach(item => {
-    rows.push([item.plataforma, item.team, item.iniciativa, item.inicio, item.fin, item.estado, item.comentarios || '']);
-  });
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  ws['!cols'] = [{wch:16},{wch:16},{wch:60},{wch:16},{wch:16},{wch:24},{wch:30}];
+  const header = ['Plataforma','Product Team','Iniciativa','Fecha de inicio','Fecha de entrega','Estado','Comentarios'];
+  const cols = [{wch:16},{wch:16},{wch:60},{wch:16},{wch:16},{wch:24},{wch:30}];
+
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Roadmap');
+
+  const rowsRoadmap = [header];
+  store.roadmap.forEach(item => {
+    rowsRoadmap.push([item.plataforma, item.team, item.iniciativa, item.inicio, item.fin, item.estado, item.comentarios || '']);
+  });
+  const wsRoadmap = XLSX.utils.aoa_to_sheet(rowsRoadmap);
+  wsRoadmap['!cols'] = cols;
+  XLSX.utils.book_append_sheet(wb, wsRoadmap, 'Roadmap');
+
+  const rowsTareas = [header];
+  store.tareas.forEach(item => {
+    rowsTareas.push([item.plataforma, item.team, item.iniciativa, item.inicio, item.fin, item.estado, item.comentarios || '']);
+  });
+  const wsTareas = XLSX.utils.aoa_to_sheet(rowsTareas);
+  wsTareas['!cols'] = cols;
+  XLSX.utils.book_append_sheet(wb, wsTareas, 'Tareas internas');
+
   const stamp = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `roadmap_actualizado_${stamp}.xlsx`);
 });
